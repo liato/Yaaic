@@ -32,7 +32,6 @@ import org.yaaic.model.Message;
 import org.yaaic.model.Server;
 
 import android.content.Intent;
-import android.util.Log;
 
 /**
  * Command: /script <code>
