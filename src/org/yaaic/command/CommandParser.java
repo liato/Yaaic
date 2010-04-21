@@ -45,6 +45,7 @@ import org.yaaic.command.handler.PartHandler;
 import org.yaaic.command.handler.QueryHandler;
 import org.yaaic.command.handler.QuitHandler;
 import org.yaaic.command.handler.RawHandler;
+import org.yaaic.command.handler.ScriptHandler;
 import org.yaaic.command.handler.TopicHandler;
 import org.yaaic.command.handler.VoiceHandler;
 import org.yaaic.command.handler.WhoisHandler;
@@ -111,6 +112,7 @@ public class CommandParser
 		commands.put("msg", new MsgHandler());
 		commands.put("quote", new RawHandler());
 		commands.put("amsg", new AMsgHandler());
+		commands.put("script", new ScriptHandler());
 		
 		aliases = new HashMap<String, String>();
 		
