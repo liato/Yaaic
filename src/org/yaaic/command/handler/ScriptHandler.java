@@ -23,6 +23,7 @@ package org.yaaic.command.handler;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+import org.yaaic.R;
 import org.yaaic.command.BaseHandler;
 import org.yaaic.exception.CommandException;
 import org.yaaic.irc.IRCService;
@@ -54,24 +55,39 @@ public class ScriptHandler extends BaseHandler
 	@Override
 	public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException 
 	{
-		String script = BaseHandler.mergeParams(params);
-		
-		if (scriptContext == null) {
-			scriptContext = Context.enter();
-	        scriptContext.setOptimizationLevel(-1);
-			scope = scriptContext.initStandardObjects();
+		try {
+			String script = BaseHandler.mergeParams(params);
+
+			if (scriptContext == null) {
+				scriptContext = Context.enter();
+		        scriptContext.setOptimizationLevel(-1);
+				scope = scriptContext.initStandardObjects();
+			}
+			Object result = scriptContext.evaluateString(scope, script, "<cmd>", 1, null);
+
+			conversation.addMessage(new Message("> " + script));
+			conversation.addMessage(new Message("Result: " + Context.toString(result)));
+
+			Intent intent = Broadcast.createConversationIntent(
+				Broadcast.CONVERSATION_MESSAGE,
+				server.getId(),
+				conversation.getName()
+			);
+
+			service.sendBroadcast(intent);
+		} catch (Exception e) {
+			Message message = new Message("Error: " + e.getMessage());
+			message.setColor(Message.COLOR_RED);
+			conversation.addMessage(message);
+
+			Intent intent = Broadcast.createConversationIntent(
+				Broadcast.CONVERSATION_MESSAGE,
+				server.getId(),
+				conversation.getName()
+			);
+
+			service.sendBroadcast(intent);
 		}
-		Object result = scriptContext.evaluateString(scope, script, "<cmd>", 1, null);
-		
-		conversation.addMessage(new Message("> " + script));
-		conversation.addMessage(new Message("Result: " + Context.toString(result)));
-		
-		Intent intent = Broadcast.createConversationIntent(
-			Broadcast.CONVERSATION_MESSAGE,
-			server.getId(),
-			conversation.getName()
-		);
-		service.sendBroadcast(intent);
 	}
 	
 	/**
