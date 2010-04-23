@@ -23,7 +23,6 @@ package org.yaaic.command.handler;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-import org.yaaic.R;
 import org.yaaic.command.BaseHandler;
 import org.yaaic.exception.CommandException;
 import org.yaaic.irc.IRCService;
