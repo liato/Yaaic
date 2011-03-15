@@ -1,10 +1,12 @@
 package org.yaaic.view;
 
+import android.graphics.Color;
 import android.text.Layout;
-import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
+import android.text.style.BackgroundColorSpan;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.TextView;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 public class ClickableMovementMethod extends LinkMovementMethod {
     private static ClickableMovementMethod sInstance;
     private static boolean isLongPress = false;
+    private BackgroundColorSpan backgroundSpan = null;
     private final GestureDetector mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener(){
         @Override
         public void onLongPress(MotionEvent e) {
@@ -31,9 +34,10 @@ public class ClickableMovementMethod extends LinkMovementMethod {
         MotionEvent event) {
         int action = event.getAction();
         mGestureDetector.onTouchEvent(event);
-        //Log.d("CMM", "onTouchEvent: "+action);
+        Log.d("CMM", "onTouchEvent: "+action);
         if (action == MotionEvent.ACTION_UP ||
-            action == MotionEvent.ACTION_DOWN) {
+            action == MotionEvent.ACTION_DOWN ||
+            action == MotionEvent.ACTION_CANCEL) {
             int x = (int) event.getX();
             int y = (int) event.getY();
 
@@ -51,6 +55,9 @@ public class ClickableMovementMethod extends LinkMovementMethod {
 
             if (link.length != 0) {
                 if (action == MotionEvent.ACTION_UP) {
+                    buffer.removeSpan(backgroundSpan);
+                    backgroundSpan = null;
+
                     if (isLongPress) {
                         isLongPress = false;
                         link[0].onLongClick(widget);
@@ -59,14 +66,19 @@ public class ClickableMovementMethod extends LinkMovementMethod {
                         link[0].onClick(widget);
                     }
                 } else if (action == MotionEvent.ACTION_DOWN) {
-                    Selection.setSelection(buffer,
-                        buffer.getSpanStart(link[0]),
-                        buffer.getSpanEnd(link[0]));
+                    if (backgroundSpan == null) {
+                        backgroundSpan = new BackgroundColorSpan(Color.RED);
+                        buffer.setSpan(backgroundSpan,buffer.getSpanStart(link[0]), buffer.getSpanEnd(link[0]), 0);
+                    }
                 }
-
+                else if (action == MotionEvent.ACTION_CANCEL) {
+                    if (backgroundSpan != null) {
+                        buffer.removeSpan(backgroundSpan);
+                    }
+                    backgroundSpan = null;
+                    isLongPress = false;
+                }
                 return true;
-            } else {
-                Selection.removeSelection(buffer);
             }
         }
         return false;
