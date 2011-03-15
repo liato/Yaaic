@@ -21,7 +21,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
 package org.yaaic.view;
 
 import org.yaaic.adapter.MessageListAdapter;
-import org.yaaic.listener.MessageClickListener;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -50,10 +49,7 @@ public class MessageListView extends ListView
     public MessageListView(Context context, View parent)
     {
         super(context);
-
         this.parent = parent;
-        this.setOnItemClickListener(MessageClickListener.getInstance());
-
         parentWidth = parent.getWidth();
         parentHeight = parent.getHeight();
     }
@@ -74,6 +70,11 @@ public class MessageListView extends ListView
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+        /*
+        Log.d("MLW", "onTouchEvent:" + event.getAction());
+        return super.onTouchEvent(event);
+        //return true;
+         */
         if (delegate) {
             // We delegate the touch events to the underlying view
             return false;
@@ -81,6 +82,16 @@ public class MessageListView extends ListView
             return super.onTouchEvent(event);
         }
     }
+
+    /*
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev)
+    {
+        Log.d("MLW", "onInterceptTouchEvent:" + ev.getAction());
+        return super.onInterceptTouchEvent(ev);
+        //return false;
+    }
+     */
 
     /**
      * On draw

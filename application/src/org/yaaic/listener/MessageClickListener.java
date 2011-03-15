@@ -25,6 +25,7 @@ import org.yaaic.adapter.MessageListAdapter;
 import org.yaaic.model.Extra;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -66,7 +67,7 @@ public class MessageClickListener implements OnItemClickListener
     public void onItemClick(AdapterView<?> group, View view, int position, long id)
     {
         MessageListAdapter adapter = (MessageListAdapter) group.getAdapter();
-
+        Log.d("MessageClickListener", "clicked");
         Intent intent = new Intent(group.getContext(), MessageActivity.class);
         intent.putExtra(Extra.MESSAGE, adapter.getItem(position).getText().toString());
         group.getContext().startActivity(intent);

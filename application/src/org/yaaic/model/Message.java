@@ -22,6 +22,9 @@ package org.yaaic.model;
 
 import java.util.Date;
 
+import org.yaaic.view.ClickableMovementMethod;
+import org.yaaic.view.LongClickableSpan;
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -29,6 +32,8 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.widget.TextView;
 
 /**
@@ -205,7 +210,6 @@ public class Message {
             String timestamp = settings.showTimestamp() ? Message.generateTimestamp(this.timestamp, settings.use24hFormat()) : "";
 
             canvas = new SpannableString(prefix + timestamp + nick + text);
-
             if (sender != null) {
                 int start = (prefix + timestamp).length() + 1;
                 int end = start + sender.length();
@@ -223,7 +227,6 @@ public class Message {
                 canvas.setSpan(new ForegroundColorSpan(color), 0, canvas.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
-
         return canvas;
     }
 
@@ -238,13 +241,45 @@ public class Message {
         // XXX: We should not read settings here ALWAYS for EVERY textview
         Settings settings = new Settings(context);
 
+        //TextView canvas = new MessageTextView(context);
         TextView canvas = new TextView(context);
 
-        canvas.setText(this.render(context));
+        SpannableString text = this.render(context);
+
+        // Use Linkify to turn all URLs to URLSpans
+        Linkify.addLinks(text, Linkify.ALL);
+
+        /*
+         * Turn all URLSpans into LongClickableSpan
+         * A better way of doing this would be to use the code from the
+         * Linkify class (can't override methods because they're all final) and add our own code
+         * to make channel names (and maybe usernames) clickable.
+         */
+        URLSpan[] urlSpans = text.getSpans(0, text.length(), URLSpan.class);
+        for (URLSpan urlSpan: urlSpans) {
+            int start = text.getSpanStart(urlSpan);
+            int end = text.getSpanEnd(urlSpan);
+            String url = urlSpan.getURL();
+            text.removeSpan(urlSpan);
+            text.setSpan(new LongClickableSpan(url), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        canvas.setText(text);
         canvas.setTextSize(settings.getFontSize());
         canvas.setTypeface(Typeface.MONOSPACE);
         canvas.setTextColor(COLOR_DEFAULT);
 
+        //LinkMovementMethod is used with Linkify,
+        //canvas.setMovementMethod(LinkMovementMethod.getInstance());
+
+        if (urlSpans.length > 0) {
+            // Both ClickableMovementMethod and MessageTouchListener consumes the touch event
+            // and prevents the Gallery and ListView from being scrolled.
+            // The Gallery and ListView can only be scrolled by pressing/dragging TextViews without links.
+
+            //canvas.setOnTouchListener(MessageTouchListener.getInstance());
+            canvas.setMovementMethod(ClickableMovementMethod.getInstance());
+        }
         return canvas;
     }
 

@@ -23,7 +23,6 @@ package org.yaaic.adapter;
 import java.util.LinkedList;
 
 import org.yaaic.R;
-import org.yaaic.listener.MessageClickListener;
 import org.yaaic.model.Conversation;
 import org.yaaic.view.MessageListView;
 
@@ -200,7 +199,7 @@ public class DeckAdapter extends BaseAdapter
     public MessageListView renderConversation(Conversation conversation, ViewGroup parent)
     {
         MessageListView list = new MessageListView(parent.getContext(), parent);
-        list.setOnItemClickListener(MessageClickListener.getInstance());
+        //list.setOnItemClickListener(MessageClickListener.getInstance());
 
         MessageListAdapter adapter = conversation.getMessageListAdapter();
         if (adapter == null) {

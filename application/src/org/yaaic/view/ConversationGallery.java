@@ -57,4 +57,20 @@ public class ConversationGallery extends Gallery
 
         return super.onFling(e1, e2, velocityX, velocityY);
     }
+
+    /*
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        Log.d("CG", "onInterceptTouchEvent: "+ev.getAction());
+        return super.onInterceptTouchEvent(ev);
+        //return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d("CG", "onTouchEvent: "+event.getAction());
+        return super.onTouchEvent(event);
+        //return true;
+    }
+     */
 }
