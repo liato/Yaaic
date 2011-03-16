@@ -35,4 +35,7 @@
 
     <string name="key_sound_highlight">sound_highlight</string>
     <string name="default_sound_highlight">false</string>
+    
+    <string name="key_mirc_colors">mirc_colors</string>
+    <string name="default_mirc_colors">true</string>
 </resources>
