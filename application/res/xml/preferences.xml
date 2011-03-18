@@ -80,6 +80,11 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
             android:summary="@string/settings_graphical_smilies_desc"
             android:key="@string/key_graphical_smilies"
             android:defaultValue="@string/default_graphical_smilies" />
+        <CheckBoxPreference
+            android:title="@string/settings_rage_faces_title"
+            android:summary="@string/settings_rage_faces_desc"
+            android:key="@string/key_rage_faces"
+            android:defaultValue="@string/default_rage_faces" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/settings_highlight">

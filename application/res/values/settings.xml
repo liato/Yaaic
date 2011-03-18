@@ -41,4 +41,8 @@
 
     <string name="key_graphical_smilies">graphical_smilies</string>
     <string name="default_graphical_smilies">false</string>
+    
+    <string name="key_rage_faces">rage_faces</string>
+    <string name="default_rage_faces">false</string>
+    
 </resources>

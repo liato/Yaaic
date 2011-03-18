@@ -237,6 +237,9 @@ public class Message
             if (settings.showGraphicalSmilies()) {
                 renderedText = Smilies.toSpannable(renderedText, context);
             }
+            if (settings.showRageFaces()) {
+                renderedText = Smilies.toSpannable(renderedText, context, Smilies.getMappings(Smilies.TYPE_RAGE_FACES));
+            }
             canvas = new SpannableString(TextUtils.concat(canvas, renderedText));
             if (hasSender()) {
                 int start = (prefix + timestamp).length() + 1;

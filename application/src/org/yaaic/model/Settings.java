@@ -234,4 +234,17 @@ public class Settings
             Boolean.parseBoolean(resources.getString(R.string.default_graphical_smilies))
         );
     }
+
+    /**
+     * Render messages with graphical rage faces.
+     *
+     * @return True if the text should be rendered with graphical rage faces, false otherwise.
+     */
+    public boolean showRageFaces()
+    {
+        return preferences.getBoolean(
+            resources.getString(R.string.key_rage_faces),
+            Boolean.parseBoolean(resources.getString(R.string.default_rage_faces))
+        );
+    }
 }
