@@ -224,7 +224,7 @@ public class IRCConnection extends PircBot
             if (conversation == null) {
                 // Open a query if there's none yet
                 conversation = new Query(sender);
-                server.addConversationl(conversation);
+                server.addConversation(conversation);
                 conversation.addMessage(message);
 
                 Intent intent = Broadcast.createConversationIntent(
@@ -341,7 +341,7 @@ public class IRCConnection extends PircBot
     {
         if (sender.equalsIgnoreCase(getNick())) {
             // We joined a new channel
-            server.addConversationl(new Channel(target));
+            server.addConversation(new Channel(target));
 
             Intent intent = Broadcast.createConversationIntent(
                 Broadcast.CONVERSATION_NEW,
@@ -349,9 +349,12 @@ public class IRCConnection extends PircBot
                 target
             );
             service.sendBroadcast(intent);
-        } else if (service.getSettings().showJoinAndPart()) {
-            Message message = new Message(service.getString(R.string.message_join, sender),
-                Message.TYPE_MISC);
+        } else if (service.getSettings().showJoinPartAndQuit()) {
+            Message message = new Message(
+                service.getString(R.string.message_join, sender),
+                Message.TYPE_MISC
+            );
+
             message.setIcon(R.drawable.join);
             message.setColor(Message.COLOR_GREEN);
             server.getConversation(target).addMessage(message);
@@ -483,11 +486,17 @@ public class IRCConnection extends PircBot
         notice = Colors.removeFormattingAndColors(notice);
 
         // Post notice to currently selected conversation
-        Conversation conversation = server.getConversation(server.getSelectedConversation());
+        Conversation conversation;
 
-        if (conversation == null) {
-            // Fallback: Use ServerInfo view
+        if (service.getSettings().showNoticeInServerWindow()) {
             conversation = server.getConversation(ServerInfo.DEFAULT_NAME);
+        } else {
+            conversation = server.getConversation(server.getSelectedConversation());
+
+            if (conversation == null) {
+                // Fallback: Use ServerInfo view
+                conversation = server.getConversation(ServerInfo.DEFAULT_NAME);
+            }
         }
 
         Message message = new Message("-" + sourceNick + "- " + notice);
@@ -537,9 +546,12 @@ public class IRCConnection extends PircBot
                 target
             );
             service.sendBroadcast(intent);
-        } else if (service.getSettings().showJoinAndPart()) {
-            Message message = new Message(service.getString(R.string.message_part, sender),
-                Message.TYPE_MISC);
+        } else if (service.getSettings().showJoinPartAndQuit()) {
+            Message message = new Message(
+                service.getString(R.string.message_part, sender),
+                Message.TYPE_MISC
+            );
+
             message.setColor(Message.COLOR_GREEN);
             message.setIcon(R.drawable.part);
             server.getConversation(target).addMessage(message);
@@ -581,7 +593,7 @@ public class IRCConnection extends PircBot
             // Open a query if there's none yet
             conversation = new Query(sender);
             conversation.addMessage(message);
-            server.addConversationl(conversation);
+            server.addConversation(conversation);
 
             Intent intent = Broadcast.createConversationIntent(
                 Broadcast.CONVERSATION_NEW,
@@ -607,12 +619,19 @@ public class IRCConnection extends PircBot
     @Override
     protected void onQuit(String sourceNick, String sourceLogin, String sourceHostname, String reason)
     {
-        if (!sourceNick.equals(this.getNick())) {
+        if (sourceNick.equals(this.getNick())) {
+            return;
+        }
+
+        if (service.getSettings().showJoinPartAndQuit()) {
             Vector<String> channels = getChannelsByNickname(sourceNick);
 
             for (String target : channels) {
-                Message message = new Message(service.getString(R.string.message_quit, sourceNick, reason),
-                    Message.TYPE_MISC);
+                Message message = new Message(
+                    service.getString(R.string.message_quit, sourceNick, reason),
+                    Message.TYPE_MISC
+                );
+
                 message.setColor(Message.COLOR_GREEN);
                 message.setIcon(R.drawable.quit);
                 server.getConversation(target).addMessage(message);
@@ -629,8 +648,11 @@ public class IRCConnection extends PircBot
             Conversation conversation = server.getConversation(sourceNick);
 
             if (conversation != null) {
-                Message message = new Message(service.getString(R.string.message_quit, sourceNick, reason),
-                    Message.TYPE_MISC);
+                Message message = new Message(
+                    service.getString(R.string.message_quit, sourceNick, reason),
+                    Message.TYPE_MISC
+                );
+
                 message.setColor(Message.COLOR_GREEN);
                 message.setIcon(R.drawable.quit);
                 conversation.addMessage(message);
@@ -642,9 +664,6 @@ public class IRCConnection extends PircBot
                 );
                 service.sendBroadcast(intent);
             }
-
-        } else {
-            // XXX: We quitted
         }
     }
 
